@@ -18,8 +18,12 @@ public class RecursosHumanos {
     @Override
     public String toString() {
         String res = "";
-        for (Empleado empleado: empleados){
-            res+= empleado.toString();
+        if(empleados.isEmpty()){
+            res="No hay empleados aún";
+        }else {
+            for (Empleado empleado : empleados) {
+                res += empleado.toString();
+            }
         }
         return res;
     }
@@ -66,8 +70,8 @@ public class RecursosHumanos {
         }
         return mayor;
     }
-    public String contarPorCategoria(){
-        int contador [] = new int[3];
+    public int[] contarPorCategoria(){
+        int[] contador = new int[3];
         for (Empleado e: empleados){
             //instance of : si ese empleado es una instacia de Contratado
             // /*
@@ -80,7 +84,7 @@ public class RecursosHumanos {
             if (e instanceof Contratado)
                 contador[((Contratado) e).getCategoria().getNumero()-1]++;
         }
-        return "categoria 01: " + contador[0] + " // categoria 02: " + contador[1] + " // categoria 03: " + contador[2] ;
+        return contador;
     }
     public int calcularCantidadSalarioMayorA(double salario){
         int cant= 0;

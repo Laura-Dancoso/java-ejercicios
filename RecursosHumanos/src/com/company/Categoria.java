@@ -5,12 +5,28 @@ public class Categoria {
     private String nombre;
     private double factor;
 
-    public Categoria(){};
+    public Categoria(){}
 
-    public Categoria(int numero, String nombre, double factor) {
+    public Categoria(int numero) {
         this.numero = numero;
-        this.nombre = nombre;
-        this.factor = factor;
+        switch (numero){
+            case 1:
+                nombre = "Docente";
+                factor= 350;
+                break;
+            case 2:
+                nombre="Administrativo";
+                factor= 450;
+                break;
+            case 3:
+                nombre="Maestranza";
+                factor= 500;
+                break;
+            default:
+                nombre="";
+                factor=0;
+                break;
+        }
     }
 
     public int getNumero() {
