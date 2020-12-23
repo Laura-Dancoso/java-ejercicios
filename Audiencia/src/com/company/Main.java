@@ -1,54 +1,135 @@
 package com.company;
 
-import javax.swing.*;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 public class Main {
-    //lo voy a hardcodear para probar luego lo hago con entrada por teclado
+    static Scanner scan = new Scanner(System.in);
+    static RadioCentral radioCentral = new RadioCentral();
     public static void main(String[] args){
 
-        RadioCentral radioCentral = new RadioCentral();
+        int opcion;
+        do{
+            System.out.println("Ingrese:");
+            System.out.println("1 - Agregar programa");
+            System.out.println("2 - Mostrar programas");
+            System.out.println("3 - Mostrar programas con mayor audiencia");
+            System.out.println("4 - Mostrar si existe un programa");
+            System.out.println("5 - Mostrar cuantos programas de cada tipo son emitidos por emisora");
+            System.out.println("6 - Mostrar cuantos programas que comienzan luego de las 15hs tienen audiencia menor a X");
+            System.out.println("0 - Cortar programa");
+            try {
+                opcion=scan.nextInt();
+                switch (opcion){
+                    case 0:
+                        break;
+                    case 1 :
+                        agregarPrograma();
+                        break;
+                    case 2:
+                        mostrarProgramas();
+                        break;
+                    case 3:
+                        mostrarProgramasConMayorAudiencia();
+                        break;
+                    case 4:
+                        mostrarSiExistePrograma();
+                        break;
+                    case 5:
+                        mostrarProgramasPorTipoYEmisora();
+                        break;
+                    case 6:
+                        mostrarCuantosProgramasTienenAudienciaMenorA();
+                        break;
+                    default:
+                        System.out.println("Dato no valido, pruebe de nuevo");
+                        break;
+                }
+            }catch (Exception e){
+                opcion=0;
+                System.out.println("Dato no válido, ingrese al sistema nuevamente");
+            }
 
-        radioCentral.agregarPrograma(new Programa("Hola", LocalTime.of(22,40),0,1,20));
-        radioCentral.agregarPrograma(new Programa("Chau", LocalTime.of(15,40),1,1,30));
-        radioCentral.agregarPrograma(new Programa("Hola", LocalTime.of(15,40),2,1,24));
-        radioCentral.agregarPrograma(new Programa("QueHaces", LocalTime.of(16,40),0,2,23));
-        radioCentral.agregarPrograma(new Programa("Radio02", LocalTime.of(20,40),1,3,50));
-        System.out.println("Mostrando programas");
-        System.out.println(radioCentral.toString());
-        System.out.println("-------------------------------");
-        //1
-        System.out.println("Programas con mayor audiencia: deberia mostrar 50,30,24");
-        List<Programa> mayorAudiencia= radioCentral.mostrarProgramasMayorAudiencia(3);
-        for(Programa programa: mayorAudiencia){
-            System.out.println(programa.toString());
+        }while(opcion!= 0);
+    }
+    //1 Agregar programa
+    public static void agregarPrograma(){
+        try{
+        System.out.println("Ingrese nombre del programa:");
+        String nombre = scan.next();
+        LocalTime hora = null;
+        System.out.println("Ingrese la hora de emisión del programa: (ejemplo: 2015)");
+        String horaCompleta=scan.next();
+        hora = LocalTime.of(Integer.valueOf(horaCompleta.substring(0,2)),Integer.valueOf(horaCompleta.substring(2,4)));
+        System.out.println("Ingrese el tipo de programa (número entero del 0 al 3)");
+        int tipo=scan.nextInt();
+        System.out.println("Ingrese la radio emisora: (número entero del 0 al 9)");
+        int emisora=scan.nextInt();
+        System.out.println("Ingrese el nivel de audiencia: (número entero mayor a 0)");
+        int audiencia = scan.nextInt();
+            System.out.println(radioCentral.agregarPrograma(new Programa(nombre,hora,tipo,emisora,audiencia)) ? "Programa agregado" : "No se pudo agregar el programa");
+        }catch (Exception e){
+            System.out.println("Dato no válido. Intente nuevamente");
         }
-        System.out.println("-----------------------");
-        //2
-        System.out.println("Existe programa? deberia mostrar q si");
-        List<Programa> existe = radioCentral.mostrarExistePrograma("Chau");
-        if(existe!=null){
+    }
+    //2 Mostrar programas
+    public static void mostrarProgramas(){
+        System.out.println("Cargando programas......");
+        System.out.println((radioCentral.getProgramas().isEmpty()) ? "No hay programas aún" : radioCentral.toString());
+    }
+    ///3 Mostrar programas con mayor audiencia
+    public static void mostrarProgramasConMayorAudiencia(){
+        if(radioCentral.getProgramas().isEmpty()){
+            System.out.println("No hay programas aún");
+        }else {
+            System.out.println("Programas con mayor audiencia:");
+            List<Programa> mayorAudiencia;
+            mayorAudiencia =(radioCentral.getProgramas().size()<3) ? radioCentral.mostrarProgramasMayorAudiencia(radioCentral.getProgramas().size()) : radioCentral.mostrarProgramasMayorAudiencia(3);
+            for (Programa programa : mayorAudiencia) {
+                System.out.println(programa.toString());
+            }
+        }
+    }
+    //4 Mostrar si existe programa
+    public static void mostrarSiExistePrograma(){
+        System.out.println("Ingrese nombre del programa a buscar: ");
+        String nombre = scan.next();
+        List<Programa> existe = radioCentral.mostrarExistePrograma(nombre);
+        if(existe!=null && existe.size()!=0){
             for (Programa programa:existe){
                 System.out.println(programa.toString());
             }
         }else {
-            System.out.println("no existe");
+            System.out.println("No existe " + nombre);
         }
-        //dsp probar uno q no exista
-        System.out.println("--------------------");
-        //3
-        System.out.println("cuantos programas de cada tipo son emitidos por emisora");
-        Map<Integer,int[]> mapTipoEmisora= radioCentral.mostrarCantidadProgramasSegunTipoYEmisora();
-        for (Integer i : mapTipoEmisora.keySet()) {
-            System.out.println("Emisora: " + i + "-> Tipo 0: " + mapTipoEmisora.get(i)[0] +"// Tipo 1: " + mapTipoEmisora.get(i)[1] + "// Tipo 2: " + mapTipoEmisora.get(i)[2] +"// Tipo 3: " + mapTipoEmisora.get(i)[3]);
+    }
+    //5 Mostrar cuantos programas de cada tipo son emitidos por emisora
+    public static void mostrarProgramasPorTipoYEmisora(){
+        if(radioCentral.getProgramas().isEmpty()){
+            System.out.println("No hay programas aún");
+        }else {
+            Map<Integer, int[]> mapTipoEmisora = radioCentral.mostrarCantidadProgramasSegunTipoYEmisora();
+            for (Integer i : mapTipoEmisora.keySet()) {
+                System.out.println("Emisora: " + i + "-> Tipo 0: " + mapTipoEmisora.get(i)[0] + "// Tipo 1: " + mapTipoEmisora.get(i)[1] + "// Tipo 2: " + mapTipoEmisora.get(i)[2] + "// Tipo 3: " + mapTipoEmisora.get(i)[3]);
+            }
         }
-        System.out.println("--------------------");
-        //4
-        System.out.println("cuantos programas que comienza luego de las 15 tienen audiencia menor a 30");
-        System.out.println(radioCentral.mostrarCuantosProgramasTienenAudienciaMenorA(30));
-
-
+    }
+    //6 Mostrar cuantos programas que comienza luego de las 15 tienen audiencia menor a :
+    public static void mostrarCuantosProgramasTienenAudienciaMenorA(){
+        if(radioCentral.getProgramas().isEmpty()){
+            System.out.println("No hay programas aún");
+        }else {
+            try {
+                System.out.println("Ingrese un número entero mayor a 0:");
+                int audiencia = scan.nextInt();
+                System.out.println("Mostrando cuantos programas que comienzan luego de las 15 tienen audiencia menor a 30");
+                int programasEncontrados = radioCentral.mostrarCuantosProgramasTienenAudienciaMenorA(audiencia);
+                System.out.println((programasEncontrados < 0) ? "No hay programas que coincidan con la búsqueda" : programasEncontrados);
+            } catch (Exception e) {
+                System.out.println("Error, intente nuevamente");
+            }
+        }
     }
 }

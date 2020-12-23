@@ -27,7 +27,7 @@ public class RadioCentral {
                 '}';
     }
 
-    public boolean agregarPrograma(Programa p){
+    public boolean agregarPrograma(Programa p) {
         return programas.add(p);
     }
     public List<Programa> mostrarProgramasMayorAudiencia(int m){
